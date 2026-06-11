@@ -16,6 +16,14 @@ case "${mode}" in
     laps=1
     timeout=90
     ;;
+"rl")
+    start_mode="count"
+    vehicles=1
+    laps="unlimited"
+    timeout=600000000
+    start_count_seconds=0
+    endless=true
+    ;;
 "1p" | "2p" | "3p" | "4p")
     start_mode="sync"
     vehicles="${mode%p}"
@@ -24,7 +32,7 @@ case "${mode}" in
     ;;
 *)
     echo "invalid mode: ${mode}"
-    echo "supported: dev, test, eval, 1p, 2p, 3p, 4p"
+    echo "supported: dev, test, rl, eval, 1p, 2p, 3p, 4p"
     exit 1
     ;;
 esac
@@ -37,6 +45,9 @@ fi
 echo "[INFO] Starting AWSIM in '${mode}' mode"
 
 declare -a opts=("--start-mode" "${start_mode}" "--vehicles" "${vehicles}" "--laps" "${laps}" "--timeout" "${timeout}")
+if [[ -n "${start_count_seconds}" ]]; then
+    opts+=("--start-count-seconds" "${start_count_seconds}")
+fi
 declare -a extra_args
 read -r -a extra_args <<<"${awsim_extra_args}"
 opts+=("${extra_args[@]}")
